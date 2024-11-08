@@ -15,8 +15,7 @@ const ImageViewerView = observer(() => {
   let imageViewerStore = rootStore.imageViewerStore;
   let windowKernelsStore = rootStore.windowKernelsStore;
   let gammaKernelsStore = rootStore.gammaKernelsStore;
-  let claheKernelsStore = rootStore.claheKernelsStore;
-  let unsharpMaskKernelsStore = rootStore.unsharpMaskKernelsStore;
+  let colorInversionKernelsStore = rootStore.colorInversionKernelsStore;
 
   return (
     <div className="w-full h-full flex flex-col gap-4 p-4">
@@ -101,6 +100,19 @@ const ImageViewerView = observer(() => {
                 disabled={!gammaKernelsStore.active}
               />
             </div>
+          </div>
+
+
+          {/* Color Inversion */}
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <div className="font-medium">ColorInversion</div>
+              <SwitchComponent
+                checked={colorInversionKernelsStore.active}
+                onChangeCallback={() => colorInversionKernelsStore.toggle(true)}
+              />
+            </div>
+
           </div>
         </div>
       </div>

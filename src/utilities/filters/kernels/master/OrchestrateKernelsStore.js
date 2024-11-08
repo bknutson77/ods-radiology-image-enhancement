@@ -6,7 +6,8 @@ export default class OrchestrateKernelsStore {
     this.workingTexture = null;
     this.filterKernels = [
       'windowKernelsStore',
-      'gammaKernelsStore'
+      'gammaKernelsStore',
+      'colorInversionKernelsStore'
     ]
   }
 
