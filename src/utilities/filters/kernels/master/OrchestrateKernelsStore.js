@@ -7,7 +7,8 @@ export default class OrchestrateKernelsStore {
     this.filterKernels = [
       'windowKernelsStore',
       'gammaKernelsStore',
-      'colorInversionKernelsStore'
+      'colorInversionKernelsStore',
+      'brightnessKernelsStore'
     ]
   }
 

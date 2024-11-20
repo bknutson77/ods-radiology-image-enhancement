@@ -1,14 +1,14 @@
 import { makeAutoObservable } from "mobx";
 
-
-export default class ColorInversionKernelsStore{
+export default class BrightnessKernelsStore {
 
   initialize() {
     this.imageWidth = 1000;
     this.imageHeight = 1000;
 
     this.active = false;
-
+    this.alpha = 1.0;
+    this.brightness = 0;
   }
 
   constructor(rootStore) {
@@ -20,18 +20,17 @@ export default class ColorInversionKernelsStore{
 
   addKernels() {
 
-    // Define GPU  function:
-    this.colorInversionKernel = this.rootStore.gpu.createKernel(
-        function (inputTexture) {
+    // Define GPU brightnessCorrection function:
+    this.brightnessCorrectionKernel = this.rootStore.gpu.createKernel(
+        function (inputTexture, alpha, brightness) {
 
             // Unwind/reverse parameters for clarity:
             let x = this.thread.y;
             let y = this.thread.x;
 
-            // Apply colorinversion:
+            // Apply brightness and alpha correction:
             const pixel = inputTexture[x][y];
-            let oldValue = pixel[2];
-            let newValue = 255 - oldValue;
+            let newValue = alpha * pixel[2] + brightness;
 
             // Snap to 0-255 range:
             if (newValue < 0) {
@@ -56,7 +55,7 @@ export default class ColorInversionKernelsStore{
   }
 
   resizeKernels() {
-    this.colorInversionKernel.setOutput([this.imageHeight, this.imageWidth]);
+    this.brightnessCorrectionKernel.setOutput([this.imageHeight, this.imageWidth]);
   }
 
   cleanupKernels() {
@@ -64,12 +63,12 @@ export default class ColorInversionKernelsStore{
     // Delete textures:
     if (this.outputTexture) {
       this.convertedImageTexture.delete();
-      this.colorInvertedTexture.delete();
+      this.brightnessCorrectedTexture.delete();
       this.outputTexture.delete();
     }
 
     // Destroy kernels:
-    this.colorInversionKernel.destroy();
+    this.brightnessCorrectionKernel.destroy();
   }
 
   changeDimensions(imageWidth, imageHeight) {
@@ -85,12 +84,28 @@ export default class ColorInversionKernelsStore{
     }
   }
 
+  changeAlpha(alpha, apply) {
+    this.alpha = alpha;
+    if (apply) {
+      this.rootStore.orchestrateKernelsStore.applyActiveFilters();
+    }
+  }
+
+  changeBrightness(brightness, apply) {
+    this.brightness = brightness;
+    if (apply) {
+      this.rootStore.orchestrateKernelsStore.applyActiveFilters();
+    }
+  }
+
   runKernels(inputTexture) {
     this.convertedImageTexture = this.rootStore.colorSpaceKernelsStore.convertRGBToHSLKernel(inputTexture);
-    this.colorInvertedTexture = this.colorInversionKernel(
-        this.convertedImageTexture
-    )
-    this.outputTexture = this.rootStore.colorSpaceKernelsStore.convertHSLToRGBKernel(this.colorInvertedTexture);
+    this.brightnessCorrectedTexture = this.brightnessCorrectionKernel(
+        this.convertedImageTexture,
+        this.alpha,
+        this.brightness
+    );
+    this.outputTexture = this.rootStore.colorSpaceKernelsStore.convertHSLToRGBKernel(this.brightnessCorrectedTexture);
     return this.outputTexture;
   }
 

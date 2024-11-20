@@ -16,6 +16,7 @@ const ImageViewerView = observer(() => {
   let windowKernelsStore = rootStore.windowKernelsStore;
   let gammaKernelsStore = rootStore.gammaKernelsStore;
   let colorInversionKernelsStore = rootStore.colorInversionKernelsStore;
+  let brightnessKernelsStore = rootStore.brightnessKernelsStore;
 
   return (
     <div className="w-full h-full flex flex-col gap-4 p-4">
@@ -113,6 +114,38 @@ const ImageViewerView = observer(() => {
               />
             </div>
 
+          </div>
+          {/* Brightness */}
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <div className="font-medium">Brightness</div>
+              <SwitchComponent
+                checked={brightnessKernelsStore.active}
+                onChangeCallback={() => brightnessKernelsStore.toggle(true)}
+              />
+            </div>
+            <div className="flex mt-2 ml-2">
+              <div className="font-light mr-4 mt-[2px]">Alpha</div>
+              <RangeSliderComponent
+                width={150}
+                min={0}
+                max={4}
+                value={brightnessKernelsStore.alpha}
+                onChangeCallback={(e) => brightnessKernelsStore.changeAlpha(e.target.value, true)}
+                disabled={!brightnessKernelsStore.active}
+              />
+            </div>
+            <div className="flex mt-[-8px] ml-2">
+              <div className="font-light mr-4 mt-[2px]">Brightness</div>
+              <RangeSliderComponent
+                width={150}
+                min={-255}
+                max={255}
+                value={brightnessKernelsStore.brightness}
+                onChangeCallback={(e) => brightnessKernelsStore.changeBrightness(e.target.value, true)}
+                disabled={!brightnessKernelsStore.active}
+              />
+            </div>
           </div>
         </div>
       </div>

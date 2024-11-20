@@ -10,6 +10,7 @@ import DisplayKernelsStore from "./utilities/filters/kernels/common/DisplayKerne
 import WindowKernelsStore from "./utilities/filters/kernels/common/WindowKernelsStore";
 import GammaKernelsStore from "./utilities/filters/kernels/contrast/GammaKernelsStore";
 import ColorInversionKernelsStore from './utilities/filters/kernels/inversion/ColorInversionKernelsStore';
+import BrightnessKernelsStore from './utilities/filters/kernels/brightness/BrightnessKernelsStore';
 
 export default class RootStore {
   constructor() {
@@ -39,6 +40,7 @@ export default class RootStore {
     this.colorSpaceKernelsStore = new ColorSpaceKernelsStore(this);
     this.gammaKernelsStore = new GammaKernelsStore(this);
     this.colorInversionKernelsStore = new ColorInversionKernelsStore(this);
+    this.brightnessKernelsStore = new BrightnessKernelsStore(this);
 
     // PAGES:
     this.imageViewerStore = new ImageViewerStore(this);
