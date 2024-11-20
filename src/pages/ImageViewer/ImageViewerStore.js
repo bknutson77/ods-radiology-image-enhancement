@@ -1,5 +1,6 @@
 import { makeAutoObservable, toJS } from "mobx";
 import daikon from "daikon";
+import Panzoom from '@panzoom/panzoom';
 
 export default class ImageViewerStore {
 
@@ -7,6 +8,7 @@ export default class ImageViewerStore {
 
     //-- IMAGE DISPLAY --//
     this.destCanvas = null;
+    this.panzoom = null;
     this.imgOriginalWidth = 800;
     this.imgOriginalHeight = 800;
     this.scale = 1.0;
@@ -21,6 +23,17 @@ export default class ImageViewerStore {
   }
 
   //-- IMAGE DISPLAY --//
+  initializePanZoom() {
+    const elem = document.getElementById('destCanvas');
+    this.panzoom = Panzoom(elem, { canvas: true });
+    const parent = elem.parentElement;
+    parent.addEventListener('wheel', this.panzoom.zoomWithWheel);
+    parent.addEventListener('wheel', function(event) {
+      if (!event.shiftKey) return
+      this.panzoom.zoomWithWheel(event)
+    });
+  }
+  
   async getImageBuffer(file) {
     return new Promise((resolve, reject) => {
       var fr = new FileReader();
@@ -95,6 +108,24 @@ export default class ImageViewerStore {
     }
   }
 
+  centerImage() {
+
+    let s = 800;
+    let x = 0;
+    let y = 0;
+
+    if (this.imgScaledWidth != s) {
+      x = (s - this.imgScaledWidth) / 2;
+    }
+    if (this.imgScaledHeight != s) {
+      y = (s - this.imgScaledHeight) / 2;
+    }
+
+    this.panzoom.pan(x, y);
+    this.panzoom.zoom(1, { animate: false });
+
+  }
+
   async loadImage(e) {
 
     if (e.target.files.length > 0) {
@@ -160,6 +191,9 @@ export default class ImageViewerStore {
       // Call orchestrator to switch image and apply active filters:
       this.rootStore.orchestrateKernelsStore.transition(this.destCanvas);
       this.rootStore.orchestrateKernelsStore.applyActiveFilters(this.filterSettings);
+
+      // Move image to center:
+      this.centerImage();
     }
   };
 

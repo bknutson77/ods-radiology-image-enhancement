@@ -30,6 +30,7 @@ export default class ColorInversionKernelsStore{
 
             // Apply colorinversion:
             const pixel = inputTexture[x][y];
+            let oldValue = pixel[2];
             let newValue = 255 - oldValue;
 
             // Snap to 0-255 range:

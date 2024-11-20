@@ -17,6 +17,11 @@ const ImageViewerView = observer(() => {
   let gammaKernelsStore = rootStore.gammaKernelsStore;
   let colorInversionKernelsStore = rootStore.colorInversionKernelsStore;
 
+  // Effects:
+  useEffect(() => {
+    imageViewerStore.initializePanZoom();
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col gap-4 p-4">
 
@@ -33,7 +38,7 @@ const ImageViewerView = observer(() => {
           <canvas 
             id="destCanvas"
             style={{width: imageViewerStore.imgScaledWidth, height: imageViewerStore.imgScaledHeight}}
-            className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"
+            className="absolute"
           />
         </div>
 
